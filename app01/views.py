@@ -13,7 +13,11 @@ def login(request):
         md5.update(password.encode('utf-8'))
         user_obj = models.User.objects.filter(username=username, password=md5.hexdigest(), is_active=True)
         if user_obj:
-            return redirect("index")
+            # 登录成功，保存登录状态 用户名
+            request.session['is_login'] = True
+            request.session['username'] = username
+            url = request.GET.get('url', "")
+            return redirect(url) if url else redirect('index')
         error = "用户名或密码错误"
     return render(request, 'login.html', locals())
 
@@ -21,6 +25,9 @@ def login(request):
 def index(request):
     # 查询所有文章
     all_article = models.Article.objects.all()
+    is_login = request.session.get('is_login')
+    username = request.session.get('username')
+    print(is_login, username)
     return render(request, 'index.html', {"all_articles": all_article})
 
 
@@ -88,3 +95,18 @@ def register(request):
             models.User.objects.create(**reg_form.cleaned_data)
             return redirect("login")
     return render(request, "register.html", {'reg_form': reg_form})
+
+
+def backend(request):
+    return render(request, "dashboard.html")
+
+
+def logout(request):
+    request.session.flush()
+    url = request.GET.get('url', "")
+    return redirect(url) if url else redirect('index')
+
+
+def article_list(request):
+    all_articles = models.Article.objects.all()
+    return render(request, "request_list.html", {'aall_article': all_articles})
