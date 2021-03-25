@@ -1,8 +1,9 @@
-from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 
 # Create your views here.
 from app01 import models
+import hashlib
+from app01.forms import RegForm, ArticleForm
 
 
 def login(request):
@@ -36,53 +37,6 @@ def article(request, pk):
     return render(request, 'article.html', {"article": article})
 
 
-from django import forms
-import hashlib
-
-
-class RegForm(forms.ModelForm):
-    # username = forms.CharField()
-    password = forms.CharField(label='密码', widget=forms.PasswordInput, min_length=6)
-    re_pwd = forms.CharField(label='确认密码', widget=forms.PasswordInput, min_length=6)
-
-    class Meta:
-        model = models.User
-        fields = '__all__'  # ['username','password'，]
-        exclude = ['last_time']
-        widgets = {
-            'password': forms.PasswordInput
-        }
-        error_messages = {
-            'username': {
-                'required': "必填项",
-            },
-            'password': {
-                'required': "必填项",
-            },
-        }
-
-    def clean_phone(self):
-        import re
-        phone = self.cleaned_data.get('phone')
-        if re.match(r'^1[3-9]\d{9}', phone):
-            return phone
-        raise ValidationError("手机号格式不正确")
-
-    def clean(self):
-        self._validate_unique = True  # 数据库检验唯一性
-        pwd = self.cleaned_data.get('password', "")
-        re_pwd = self.cleaned_data.get('re_pwd', "")
-        if pwd == re_pwd:
-            # 对密码明文进行加密
-            md5 = hashlib.md5()
-            md5.update(pwd.encode('utf-8'))
-            print(md5.hexdigest())
-            self.cleaned_data['password'] = md5.hexdigest()
-            return self.cleaned_data
-        self.add_error('re_pwd', '两次密码不一致')
-        raise ValidationError("两次密码不一致")
-
-
 def register(request):
     reg_form = RegForm()
     if request.method == "POST":
@@ -109,4 +63,30 @@ def logout(request):
 
 def article_list(request):
     all_articles = models.Article.objects.all()
-    return render(request, "request_list.html", {'aall_article': all_articles})
+    return render(request, "article_list.html", {'all_articles': all_articles})
+
+
+def article_add(request):
+    form_obj = ArticleForm()
+    if request.method == 'POST':
+        form_obj = ArticleForm(request.POST)
+        if form_obj.is_valid():
+            detail_obj = models.ArtileDetail.objects.create(content=request.POST.get('detail'))
+            form_obj.cleaned_data['detail_id'] = detail_obj.pk
+            models.Article.objects.create(**form_obj.cleaned_data)
+            return redirect('article_list')
+
+    return render(request, "article_add.html", {'form_obj': form_obj})
+
+
+def article_edit(request, pk):
+    article_obj = models.Article.objects.filter(pk=pk).first()
+    form_obj = ArticleForm(instance=article_obj)
+    if request.method == "POST":
+        form_obj = ArticleForm(request.POST, instance=article_obj)
+        if form_obj.is_valid():
+            form_obj.instance.detail.content = request.POST.get('detail')
+            form_obj.instance.detail.save()
+            form_obj.save()
+            return redirect('article_list')
+    return render(request, 'article_edit.html', {'form_obj': form_obj, 'article_obj': article_obj})

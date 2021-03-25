@@ -14,12 +14,12 @@
                             {{ request.session.username }}
                             <span class="caret"></span>
                         </button>
-                    <ul class="dropdown-menu">
-                      <li><a href="{% url 'backend' %}">管理中心</a></li>
-                      <li><a href="{% url 'logout' %}?url={{ request.path_info }}">注销</a></li>
-                    </ul>
-              </div>
-                            </span>
+                        <ul class="dropdown-menu">
+                          <li><a href="{% url 'backend' %}">管理中心</a></li>
+                          <li><a href="{% url 'logout' %}?url={{ request.path_info }}">注销</a></li>
+                        </ul>
+                    </div>
+                </span>
             {% else %}
                 <a href="{% url 'login' %}?url={{ request.path_info }}" class="blog-nav-item pull-right">登录</a>
 

@@ -15,15 +15,23 @@ class User(models.Model):
     last_time = models.DateTimeField(verbose_name="最后一次登录时间", auto_now=True, null=True, blank=True)
     is_active = models.BooleanField(verbose_name="是否激活", default=True)
 
+    def __str__(self):
+        return self.username
+
 
 class Category(models.Model):
     title = models.CharField(verbose_name="板块标题", max_length=64)
+
+    def __str__(self):
+        return self.title
 
 
 class Article(models.Model):
     """
     标题，文章摘要，文章内容(另外一张表存放)，作者，板块，创建时间，更新时间，删除状态
     """
+    PUBSTATUS = ((False, "未发布"), (True, "已发布"))
+
     title = models.CharField(verbose_name="标题", max_length=64, unique=True)
     abstract = models.CharField(verbose_name="文章摘要", max_length=256)
     author = models.ForeignKey(User, to_field="username", verbose_name="作者", on_delete=models.SET_NULL, null=True)
@@ -31,7 +39,9 @@ class Article(models.Model):
     create_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     update_time = models.DateTimeField(verbose_name="更新时间", auto_now=True)
     delete_status = models.BooleanField(verbose_name="是否删除", default=False)
+    publish_status = models.BooleanField(verbose_name="发布状态", choices=PUBSTATUS, default=False)
     detail = models.OneToOneField("ArtileDetail", verbose_name="文章详情", on_delete=models.SET_NULL, null=True)
+
 
 
 class ArtileDetail(models.Model):

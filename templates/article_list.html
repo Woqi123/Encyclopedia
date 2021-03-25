@@ -1,0 +1,46 @@
+{% extends 'dashboard.html' %}
+{% block main %}
+    <h1>文章列表</h1>
+    <a class="btn btn-primary" href="{% url 'article_add' %}"><i class="fa fa-plus"></i></a>
+    <table class="footable table table-stripped toggle-arrow-tiny table-hover" data-page-size="15">
+        <thead>
+        <tr>
+
+            <th>序号</th>
+            <th>id</th>
+            <th>标题</th>
+            <th>分类</th>
+            <th>创建时间</th>
+            <th>发布状态</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for article in all_articles %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ article.pk }}</td>
+                <td>{{ article.title }}</td>
+                <td>{{ article.category | default:'-' }}</td>
+                <td>{{ article.create_time }}</td>
+                <td>
+                    {% if article.publish_status %}
+                        <span class="label label-primary">{{ article.get_publish_status_display }}</span>
+                    {% else %}
+                        <span class="label label-danger">{{ article.get_publish_status_display }}</span>
+                    {% endif %}
+
+                </td>
+                <td><a href="{% url 'article_edit' article.pk %}"><i class="fa fa-edit"></i></a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="6">
+                <ul class="pagination pull-right"></ul>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+{% endblock %}
