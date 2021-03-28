@@ -67,3 +67,10 @@ class ArticleForm(forms.ModelForm):
             'detail': forms.Select(attrs={'class': 'form-control'}),
         }
         exclude = ['detail']
+
+
+class ArticleDetailForm(forms.ModelForm):
+    class Meta:
+        model = models.ArtileDetail
+        fields = "__all__"
+

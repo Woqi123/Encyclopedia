@@ -14,6 +14,7 @@ class User(models.Model):
     creat_time = models.DateTimeField(verbose_name="注册时间", auto_now_add=True)
     last_time = models.DateTimeField(verbose_name="最后一次登录时间", auto_now=True, null=True, blank=True)
     is_active = models.BooleanField(verbose_name="是否激活", default=True)
+    profile = models.ImageField(verbose_name="头像", upload_to="image/profile", default="image/profile/default.jpg")
 
     def __str__(self):
         return self.username
@@ -43,9 +44,11 @@ class Article(models.Model):
     detail = models.OneToOneField("ArtileDetail", verbose_name="文章详情", on_delete=models.SET_NULL, null=True)
 
 
+from ckeditor_uploader.fields import RichTextUploadingField
+
 
 class ArtileDetail(models.Model):
-    content = models.TextField(verbose_name="文章内容")
+    content = RichTextUploadingField(verbose_name="文章内容")
 
 
 class Comment(models.Model):

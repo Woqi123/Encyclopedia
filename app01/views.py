@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from app01 import models
 import hashlib
-from app01.forms import RegForm, ArticleForm
+from app01.forms import RegForm, ArticleForm, ArticleDetailForm
+from app01.util.pagination import Pagination
 
 
 def login(request):
@@ -26,9 +27,9 @@ def login(request):
 def index(request):
     # 查询所有文章
     all_article = models.Article.objects.all()
-    is_login = request.session.get('is_login')
-    username = request.session.get('username')
-    print(is_login, username)
+    # is_login = request.session.get('is_login')
+    # username = request.session.get('username')
+    # print(is_login, username)
     return render(request, 'index.html', {"all_articles": all_article})
 
 
@@ -40,7 +41,7 @@ def article(request, pk):
 def register(request):
     reg_form = RegForm()
     if request.method == "POST":
-        reg_form = RegForm(request.POST)
+        reg_form = RegForm(request.POST, request.FILES)
         if reg_form.is_valid():
             # 注册成功，跳转到登录页面
             print(request.POST)
@@ -62,31 +63,51 @@ def logout(request):
 
 
 def article_list(request):
-    all_articles = models.Article.objects.all()
-    return render(request, "article_list.html", {'all_articles': all_articles})
+    articles_list = models.Article.objects.all()
+    pagination = Pagination(request, len(articles_list), 4)
+    return render(request, "article_list.html",
+                  {'articles_list': articles_list[pagination.start: pagination.end], "page": pagination.page,
+                   "total_page": range(pagination.page_start, pagination.page_end + 1)})
 
 
 def article_add(request):
     form_obj = ArticleForm()
+    article_detail_form = ArticleDetailForm()
     if request.method == 'POST':
         form_obj = ArticleForm(request.POST)
-        if form_obj.is_valid():
-            detail_obj = models.ArtileDetail.objects.create(content=request.POST.get('detail'))
+        article_detail_form = ArticleDetailForm(request.POST)
+
+        if form_obj.is_valid() and article_detail_form.is_valid():
+            detail_obj = article_detail_form.save()
             form_obj.cleaned_data['detail_id'] = detail_obj.pk
             models.Article.objects.create(**form_obj.cleaned_data)
             return redirect('article_list')
 
-    return render(request, "article_add.html", {'form_obj': form_obj})
+    return render(request, "article_add.html", {'form_obj': form_obj, "article_detail_form": article_detail_form})
 
 
 def article_edit(request, pk):
     article_obj = models.Article.objects.filter(pk=pk).first()
     form_obj = ArticleForm(instance=article_obj)
+    article_detail_form = ArticleDetailForm(instance=article_obj.detail)
+
     if request.method == "POST":
         form_obj = ArticleForm(request.POST, instance=article_obj)
-        if form_obj.is_valid():
-            form_obj.instance.detail.content = request.POST.get('detail')
-            form_obj.instance.detail.save()
+        article_detail_form = ArticleDetailForm(request.POST, instance=article_obj.detail)
+
+        if form_obj.is_valid() and article_detail_form.is_valid():
+            # form_obj.instance.detail.content = request.POST.get('detail')
+            # form_obj.instance.detail.save()
+            article_detail_form.save()
             form_obj.save()
             return redirect('article_list')
-    return render(request, 'article_edit.html', {'form_obj': form_obj, 'article_obj': article_obj})
+    return render(request, 'article_edit.html',
+                  {'article_obj': article_obj, 'form_obj': form_obj, 'article_detail_form': article_detail_form})
+
+
+def user_list(request):
+    user_list = [{"username": "woqi-{}".format(i), "password": "123456"} for i in range(309)]
+    pagination = Pagination(request, len(user_list))
+    return render(request, "user_list.html",
+                  {"user_list": user_list[pagination.start: pagination.end], "page": pagination.page,
+                   "total_page": range(pagination.page_start, pagination.page_end + 1)})

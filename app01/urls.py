@@ -20,4 +20,6 @@ urlpatterns = [
     url(r'article_add/$', views.article_add, name="article_add"),
     url(r'article_edit/(\d+)$', views.article_edit, name="article_edit"),
 
+    url(r'user_list/$', views.user_list, name="user_list"),
+
 ]

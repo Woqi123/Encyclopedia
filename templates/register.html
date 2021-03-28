@@ -53,9 +53,10 @@
 <body>
 
 <div class="container">
-    <form class="form-signin" action="" method="post">
+    <form class="form-signin" action="" method="post" novalidate enctype="multipart/form-data">
         {% csrf_token %}
         <h2 class="form-signin-heading">欢迎注册</h2>
+        {{ reg_form.profile }}
         <input type="text" id="username" name="username" class="form-control"
                placeholder="{{ reg_form.username.label }}" required="" autofocus="">
         <input type="password" id="password" name="password" class="form-control"

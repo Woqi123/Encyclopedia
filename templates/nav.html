@@ -11,6 +11,8 @@
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
+                            <image width="20px"
+                                   src="{{ request.user_obj.profile.url }}"></image>
                             {{ request.session.username }}
                             <span class="caret"></span>
                         </button>

@@ -53,7 +53,7 @@
                             <label for="detail"
                                    class="col-sm-2 control-label">文章详情</label>
                             <div class="col-sm-10">
-                                <textarea type="text" class="form-control" name="detail" id="detail">{{ article_obj.detail.content }}</textarea>
+                                {{ article_detail_form.content }}
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -70,4 +70,10 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block js %}
+    {% load static %}
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 {% endblock %}

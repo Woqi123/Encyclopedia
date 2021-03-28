@@ -29,10 +29,10 @@
         <div class="sidebar-collapse">
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
-                    <div class="dropdown profile-element"> <span>
-                            <img alt="image" class="img-circle"
-                                 src="{% static 'plugins/dashboard/images/profile_small.jpg' %}"/>
-                             </span>
+                    <div class="dropdown profile-element">
+                        <span>
+                            <img alt="image" class="img-circle width:100%" src={{ request.user_obj.profile.url }}>
+                        </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear"> <span class="block m-t-xs"> <strong
                                     class="font-bold">David Williams</strong>
@@ -465,7 +465,7 @@
                     <div class="ibox">
                         <div class="ibox-content">
                             {% block main %}
-                                <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+                                <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="5">
                                     <thead>
                                     <tr>
 
@@ -738,17 +738,15 @@
                                     </tr>
 
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td colspan="6">
-                                            <ul class="pagination pull-right"></ul>
-                                        </td>
-                                    </tr>
-                                    </tfoot>
+{#                                    <tfoot>#}
+{#                                    <tr>#}
+{#                                        <td colspan="6">#}
+{#                                            <ul class="pagination pull-right"></ul>#}
+{#                                        </td>#}
+{#                                    </tr>#}
+{#                                    </tfoot>#}
                                 </table>
                             {% endblock %}
-
-
                         </div>
                     </div>
                 </div>
@@ -780,18 +778,21 @@
 <script src="{% static 'plugins/dashboard/js/pace.min.js' %}"></script>
 
 <!-- FooTable -->
-<script src="{% static 'plugins/dashboard/js/footable.all.min.js' %}"></script>
+{#<script src="{% static 'plugins/dashboard/js/footable.all.min.js' %}"></script>#}
+
+{% block js %}
+{% endblock %}
 
 <!-- Page-Level Scripts -->
 
-<script>
-    $(document).ready(function () {
-
-        $('.footable').footable();
-
-    });
-
-</script>
+{#<script>#}
+{#    $(document).ready(function () {#}
+{##}
+{#        $('.footable').footable();#}
+{##}
+{#    });#}
+{##}
+{#</script>#}
 </body>
 
 </html>
